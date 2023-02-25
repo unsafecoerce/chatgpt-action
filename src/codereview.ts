@@ -29,9 +29,16 @@ export const codeReview = async (bot: Bot, prompt: string, promptSuffix: string,
         description = context.payload.pull_request.body;
     }
     const preprocessPrompt = (prompt: string, filename: string) => {
-        return prompt.replaceAll('$filename', title)
-                     .replaceAll('$description', description)
-                     .replaceAll('$filename', filename);
+        if (title) {
+            prompt = prompt.replaceAll('$filename', title);
+        }
+        if (description) {
+            prompt = prompt.replaceAll('$description', description);
+        }
+        if (filename) {
+            prompt = prompt.replaceAll('$filename', filename);
+        }
+        return prompt;
     };
 
     // collect diff chunks
