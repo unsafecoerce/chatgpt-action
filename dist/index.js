@@ -25076,6 +25076,7 @@ minimatch.Minimatch = Minimatch;
 //# sourceMappingURL=index.js.map
 ;// CONCATENATED MODULE: ./lib/options.js
 
+
 class Prompts {
     review_beginning;
     review_patch;
@@ -25112,12 +25113,22 @@ class Inputs {
         if (!content) {
             return '';
         }
-        return content
-            .replaceAll('$title', this.title)
-            .replaceAll('$description', this.description)
-            .replaceAll('$filename', this.filename)
-            .replaceAll('$patch', this.patch)
-            .replaceAll('$diff', this.diff);
+        if (this.title) {
+            content = content.replace('$title', this.title);
+        }
+        if (this.description) {
+            content = content.replace('$description', this.description);
+        }
+        if (this.filename) {
+            content = content.replace('$filename', this.filename);
+        }
+        if (this.patch) {
+            content = content.replace('$patch', this.patch);
+        }
+        if (this.diff) {
+            content = content.replace('$diff', this.diff);
+        }
+        return content;
     }
 }
 class Options {
@@ -25129,6 +25140,7 @@ class Options {
         this.debug = debug;
         this.chatgpt_reverse_proxy = chatgpt_reverse_proxy;
         this.review_comment_lgtm = review_comment_lgtm;
+        core.info(`path_filters: ${path_filters}, ${JSON.stringify(path_filters)}`);
         this.path_filters = new PathFilter(path_filters);
     }
     check_path(path) {
@@ -25154,6 +25166,7 @@ class PathFilter {
         }
     }
     check(path) {
+        core.info("check path: " + path + ", rules: " + JSON.stringify(this.rules));
         let include_all = this.rules.length == 0;
         let matched = false;
         for (const [rule, exclude] of this.rules) {
@@ -25538,7 +25551,14 @@ const scorePullRequest = async (bot, options, prompts) => {
 
 async function run() {
     const action = core.getInput('action');
-    let options = new Options(core.getBooleanInput('debug'), core.getInput('chatgpt_reverse_proxy'), core.getBooleanInput('review_comment_lgtm'), core.getMultilineInput('path_filters'));
+    let options = new Options(
+    // true,
+    // 'http://localhost:8080',
+    // true,
+    // ['!dist/**']
+    core.getBooleanInput('debug'), core.getInput('chatgpt_reverse_proxy'), core.getBooleanInput('review_comment_lgtm'), core.getMultilineInput('path_filters'));
+    // console.log(options.check_path('src/options.ts'));
+    // exit(0);
     const prompts = new Prompts(core.getInput('review_beginning'), core.getInput('review_patch'), core.getInput('scoring'));
     // initialize chatgpt bot
     let bot = null;

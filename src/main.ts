@@ -5,15 +5,24 @@ import {Bot} from './bot.js'
 import {Prompts, Options} from './options.js'
 import {codeReview} from './review.js'
 import {scorePullRequest} from './score.js'
+import { exit } from 'process'
 
 async function run(): Promise<void> {
   const action: string = core.getInput('action')
   let options: Options = new Options(
+    // true,
+    // 'http://localhost:8080',
+    // true,
+    // ['!dist/**']
     core.getBooleanInput('debug'),
     core.getInput('chatgpt_reverse_proxy'),
     core.getBooleanInput('review_comment_lgtm'),
     core.getMultilineInput('path_filters')
   )
+
+  // console.log(options.check_path('src/options.ts'));
+  // exit(0);
+
   const prompts: Prompts = new Prompts(
     core.getInput('review_beginning'),
     core.getInput('review_patch'),
